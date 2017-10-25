@@ -1,0 +1,16 @@
+#! /bin/bash
+
+
+echo "该脚本用来创建hadoop容器集群"
+
+echo "删除以下名字的容器"
+docker rm -f hadoop101 hadoop102 hadoop103
+
+echo "创建master节点"
+docker run --name hadoop99 --hostname hadoop99 --net hadoop-net --ip 192.168.8.99 -P -p 50070:50070 -p 8088:8088 -d zhongchzh/centos-hadoop
+
+echo "创建slave节点10"
+docker run --name hadoop10 --hostname hadoop10 --net hadoop-net --ip 192.168.8.10 -d zhongchzh/centos-hadoop
+
+echo "创建slave节点11"
+docker run --name hadoop11 --hostname hadoop11 --net hadoop-net --ip 192.168.8.11 -d zhongchzh/centos-hadoop
