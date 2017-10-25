@@ -14,4 +14,5 @@ COPY zookeeper/ /opt/zookeeper
 ENV ZOOKEEPER_HOME /opt/zookeeper
 ENV PATH ${ZOOKEEPER_HOME}/bin:$PATH
 
-
+#曝露端口
+EXPOSE 2181 2888 3888
