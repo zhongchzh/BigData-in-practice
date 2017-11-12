@@ -1,0 +1,142 @@
+version: '2'
+services:
+    master-101:
+        image: zhongchzh/centos-hive
+        restart: always
+        container_name: centos-master
+        hostname: centos-master
+        networks:
+            hadoop_cluster_net:
+                ipv4_address: 192.168.8.101
+        ports:
+            - "8088:8088"
+            - "9000:9000"
+            - "9001:9001"
+            - "14000:14000"
+            - "14001:14001"
+            - "19888:19888"
+            - "50070:50070"
+        extra_hosts:
+            - "centos-slave-101:192.168.8.201"
+            - "centos-slave-101:192.168.8.202"
+            - "centos-slave-101:192.168.8.203"
+            - "debian-mysql:192.168.8.102"
+        volumes:
+            - ~/MyData/BigData-in-practice/container/hadoop:/var/hadoop
+            - ~/MyData/BigData-in-practice/container/hive/hive-site.xml:/opt/hive/conf/hive-site.xml
+            - ~/MyData/BigData-in-practice/container/hive/hive-env.sh:/opt/hive/conf/hive-env.sh
+                        
+    slave-101:
+        image: zhongchzh/centos-hive
+        restart: always
+        container_name: centos-slave-101
+        hostname: centos-slave-101
+        networks:
+            hadoop_cluster_net:
+                ipv4_address: 192.168.8.201
+        ports:
+            - "51010:50010"
+            - "51020:50020"
+            - "51075:50075"
+        extra_hosts:
+            - "centos-master:192.168.8.101"
+            - "centos-slave-102:192.168.8.202"
+            - "centos-slave-103:192.168.8.203"
+            - "debian-mysql:192.168.8.102"
+        volumes:
+            - ~/MyData/BigData-in-practice/container/hadoop:/var/hadoop
+            - ~/MyData/BigData-in-practice/container/hive/hive-site.xml:/opt/hive/conf/hive-site.xml
+            - ~/MyData/BigData-in-practice/container/hive/hive-env.sh:/opt/hive/conf/hive-env.sh
+            
+    slave-102:
+        image: zhongchzh/centos-hive
+        restart: always
+        container_name: centos-slave-102
+        hostname: centos-slave-102
+        networks:
+            hadoop_cluster_net:
+                ipv4_address: 192.168.8.202
+        ports:
+            - "52010:50010"
+            - "52020:50020"
+            - "52075:50075"
+        extra_hosts:
+            - "centos-master:192.168.8.101"
+            - "centos-slave-101:192.168.8.201"
+            - "centos-slave-103:192.168.8.203"
+            - "debian-mysql:192.168.8.102"
+        volumes:
+            - ~/MyData/BigData-in-practice/container/hadoop:/var/hadoop
+            - ~/MyData/BigData-in-practice/container/hive/hive-site.xml:/opt/hive/conf/hive-site.xml
+            - ~/MyData/BigData-in-practice/container/hive/hive-env.sh:/opt/hive/conf/hive-env.sh
+        
+    slave-103:
+        image: zhongchzh/centos-hive
+        restart: always
+        container_name: centos-slave-103
+        hostname: centos-slave-103
+        networks:
+            hadoop_cluster_net:
+                ipv4_address: 192.168.8.203
+        ports:
+            - "53010:50010"
+            - "53020:50020"
+            - "53075:50075"
+        extra_hosts:
+            - "centos-master:192.168.8.101"
+            - "centos-slave-101:192.168.8.201"
+            - "centos-slave-102:192.168.8.202"
+            - "debian-mysql:192.168.8.102"
+        volumes:
+            - ~/MyData/BigData-in-practice/container/hadoop:/var/hadoop
+            - ~/MyData/BigData-in-practice/container/hive/hive-site.xml:/opt/hive/conf/hive-site.xml
+            - ~/MyData/BigData-in-practice/container/hive/hive-env.sh:/opt/hive/conf/hive-env.sh
+            
+
+#    hue-101:
+#        image: gethue/hue
+#        restart: always
+#        container_name: ubuntu-hue
+#        hostname: ubuntu-hue
+#        networks:
+#            hadoop_cluster_net:
+#                ipv4_address: 192.168.8.200
+#        ports:
+#            - "8888:8888"
+#        extra_hosts:
+#            - "centos-zk-101:192.168.8.101"
+#            - "centos-zk-102:192.168.8.102"
+#            - "centos-zk-103:192.168.8.103"
+#            - "centos-nn-101:192.168.8.104"
+#            - "centos-nn-102:192.168.8.105"
+#            - "centos-rm-101:192.168.8.106"
+#            - "centos-rm-102:192.168.8.107"
+#            - "centos-dn-101:192.168.8.108"
+#            - "centos-dn-102:192.168.8.109"
+#            - "centos-dn-102:192.168.8.110"
+#        volumes:
+#            - ~/MyData/BigData-in-practice/container/hue/pseudo-distributed.ini:/hue/desktop/conf/pseudo-distributed.ini
+
+            
+    mysql-101:
+        image: mysql:5.6
+        restart: always
+        container_name: debian-mysql
+        hostname: debian-mysql
+        networks:
+            hadoop_cluster_net:
+                ipv4_address: 192.168.8.102
+        ports:
+            - "13306:3306"
+        environment: 
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ~/MyData/BigData-in-practice/container/mysql:/var/lib/mysql
+                  
+networks:
+  hadoop_cluster_net:
+    driver: bridge
+    ipam:
+        driver: default
+        config:
+            - subnet: 192.168.8.0/16
