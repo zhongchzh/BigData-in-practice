@@ -1,8 +1,8 @@
-#This Dockerfile uses the centos image
+#This Dockerfile uses the zhongchzh/centos-jdk-ssh image
 #Author: zhongchzh
 
 #基础镜像
-FROM zhongchzh/centos-jdk
+FROM zhongchzh/centos-jdk-ssh
 
 #维护者信息
 MAINTAINER zhongchzh zhongchzh@gmail.com
@@ -10,19 +10,18 @@ MAINTAINER zhongchzh zhongchzh@gmail.com
 #复制hadoop安装包
 COPY hadoop/ /opt/hadoop
 
-#安装openssh-server
-RUN yum install iproute which openssl openssh-server openssh-clients -y\
- && sed -i "s/#UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config\
- && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config\
- && ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N ''\
- && ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N ''\
- && ssh-keygen -t dsa -f /etc/ssh/ssh_host_ed25519_key  -N ''
+#复制执行脚本
+COPY docker-entrypoint.sh ~/
+
+#修改root密码
+RUN echo "root" | passwd --stdin root
 
 #配置环境变量
 ENV HADOOP_HOME /opt/hadoop
+ENV PATH "${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin:${PATH}"
 
-#暴露22端口
-EXPOSE 22
+#暴露端口
+EXPOSE 9000 9001 14000 14001 50010 50020 50070 50075
 
-#启动ssh服务
-CMD ["/usr/sbin/sshd", "-D"]
+#执行命令
+ENTRYPOINT ["~/docker-entrypoint.sh"]

@@ -1,4 +1,4 @@
-#This Dockerfile uses the centos image
+#This Dockerfile uses the zhongchzh/centos-jdk image
 #Author: zhongchzh
 
 #基础镜像
